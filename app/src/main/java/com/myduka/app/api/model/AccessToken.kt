@@ -18,14 +18,15 @@
 
 package com.myduka.app.api.model
 
-import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 /**
  * Created  on 7/13/2017.
  */
 
-class AccessToken(@field:SerializedName("access_token") @field:Expose
-                  val accessToken: String,
-                  @field:SerializedName("expires_in") @field:Expose
-                  val expiresIn: String)
+class AccessToken(
+    @field:SerializedName("access_token")
+    val accessToken: String,
+    @field:SerializedName("expires_in")
+    val expiresIn: String
+)

@@ -16,6 +16,8 @@
  *
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.myduka.app.ui.activity
 
 import android.app.ProgressDialog
@@ -25,17 +27,17 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v4.content.LocalBroadcastManager
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
 import android.text.InputType
 import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
 import com.myduka.app.R
 import com.myduka.app.api.ApiClient
@@ -124,14 +126,22 @@ class MainActivity : AppCompatActivity(), PriceTransfer {
         }
 
         cart_list.apply {
-            this.layoutManager = LinearLayoutManager(this@MainActivity,
-                    LinearLayoutManager.VERTICAL, false)
+            this.layoutManager = LinearLayoutManager(
+                this@MainActivity,
+                LinearLayoutManager.VERTICAL, false
+            )
 
-            addItemDecoration(RecyclerViewListDecorator(this@MainActivity,
-                    LinearLayoutManager.HORIZONTAL))
+            addItemDecoration(
+                RecyclerViewListDecorator(
+                    this@MainActivity,
+                    LinearLayoutManager.HORIZONTAL
+                )
+            )
 
-            adapter = CartListAdapter(this@MainActivity, cartItems, cartPrices,
-                    this@MainActivity)
+            adapter = CartListAdapter(
+                this@MainActivity, cartItems, cartPrices,
+                this@MainActivity
+            )
         }
 
         getFirebaseRegId()
@@ -152,8 +162,8 @@ class MainActivity : AppCompatActivity(), PriceTransfer {
         return when (item.itemId) {
             R.id.action_checkout -> {
                 Snackbar.make(pay_layout, "Item 1 Selected", Snackbar.LENGTH_LONG)
-                        .setActionTextColor(Color.RED)
-                        .show()
+                    .setActionTextColor(Color.RED)
+                    .show()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -177,7 +187,7 @@ class MainActivity : AppCompatActivity(), PriceTransfer {
     }
 
     private fun showCheckoutDialog() {
-        val builder = AlertDialog.Builder(this)
+        val builder = MaterialAlertDialogBuilder(this)
         builder.setTitle(getString(R.string.checkout_dialog_title, getTotal(mPriceArrayList)))
 
         val input = EditText(this).apply {
@@ -206,17 +216,17 @@ class MainActivity : AppCompatActivity(), PriceTransfer {
         mProgressDialog.show()
         val timestamp = Utils.timestamp
         val stkPush = STKPush(
-                BUSINESS_SHORT_CODE,
-                Utils.getPassword(BUSINESS_SHORT_CODE, PASSKEY, timestamp),
-                timestamp,
-                TRANSACTION_TYPE,
-                getTotal(mPriceArrayList).toString(),
-                Utils.sanitizePhoneNumber(phone_number),
-                PARTYB,
-                Utils.sanitizePhoneNumber(phone_number),
-                CALLBACKURL + mFireBaseRegId,
-                "test", //The account reference
-                "test"  //The transaction description
+            BUSINESS_SHORT_CODE,
+            Utils.getPassword(BUSINESS_SHORT_CODE, PASSKEY, timestamp),
+            timestamp,
+            TRANSACTION_TYPE,
+            getTotal(mPriceArrayList).toString(),
+            Utils.sanitizePhoneNumber(phone_number),
+            PARTYB,
+            Utils.sanitizePhoneNumber(phone_number),
+            CALLBACKURL + mFireBaseRegId,
+            "test", //The account reference
+            "test"  //The transaction description
         )
 
         mApiClient.setGetAccessToken(false)
@@ -290,13 +300,13 @@ class MainActivity : AppCompatActivity(), PriceTransfer {
             mSharedPrefsUtil.saveIsFirstTime(true)
 
             SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
-                    .setTitleText(getString(R.string.title_success))
-                    .setContentText(getString(R.string.dialog_message_success))
-                    .setConfirmClickListener { sDialog ->
-                        sDialog.dismissWithAnimation()
-                        mSharedPrefsUtil.saveIsFirstTime(false)
-                    }
-                    .show()
+                .setTitleText(getString(R.string.title_success))
+                .setContentText(getString(R.string.dialog_message_success))
+                .setConfirmClickListener { sDialog ->
+                    sDialog.dismissWithAnimation()
+                    mSharedPrefsUtil.saveIsFirstTime(false)
+                }
+                .show()
         }
     }
 }

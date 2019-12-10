@@ -19,18 +19,20 @@
 package com.myduka.app.ui
 
 import android.content.Context
-import android.content.res.TypedArray
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.view.View
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 /**
  * Created by Brayo on 8/28/2016.
  */
-class RecyclerViewListDecorator(context: Context, orientation: Int) : RecyclerView.ItemDecoration() {
+class RecyclerViewListDecorator(
+    context: Context,
+    orientation: Int
+) : RecyclerView.ItemDecoration() {
+
     private val mDivider: Drawable?
 
     private var mOrientation: Int = 0
@@ -52,7 +54,8 @@ class RecyclerViewListDecorator(context: Context, orientation: Int) : RecyclerVi
         mOrientation = orientation
     }
 
-    override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State?) {
+    override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+        super.onDrawOver(c, parent, state)
         if (mOrientation == VERTICAL_LIST) {
             drawVertical(c, parent)
         } else {
@@ -71,7 +74,7 @@ class RecyclerViewListDecorator(context: Context, orientation: Int) : RecyclerVi
         for (i in 0 until childCount) {
             val child = parent.getChildAt(i)
             val params = child
-                    .layoutParams as RecyclerView.LayoutParams
+                .layoutParams as RecyclerView.LayoutParams
             val top = child.bottom + params.bottomMargin
             val bottom = top + mDivider!!.intrinsicHeight
             mDivider.setBounds(left, top, right, bottom)
@@ -90,7 +93,7 @@ class RecyclerViewListDecorator(context: Context, orientation: Int) : RecyclerVi
         for (i in 0 until childCount) {
             val child = parent.getChildAt(i)
             val params = child
-                    .layoutParams as RecyclerView.LayoutParams
+                .layoutParams as RecyclerView.LayoutParams
             val left = child.right + params.rightMargin
             val right = left + mDivider!!.intrinsicHeight
             mDivider.setBounds(left, top, right, bottom)
@@ -98,7 +101,7 @@ class RecyclerViewListDecorator(context: Context, orientation: Int) : RecyclerVi
         }
     }
 
-    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State?) {
+    override fun getItemOffsets(outRect: Rect, itemPosition: Int, parent: RecyclerView) {
         if (mOrientation == VERTICAL_LIST) {
             outRect.set(0, 0, 0, mDivider!!.intrinsicHeight)
         } else {

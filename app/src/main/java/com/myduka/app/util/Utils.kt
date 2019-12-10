@@ -1,10 +1,8 @@
 package com.myduka.app.util
 
 import android.util.Base64
-
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 /**
  * Created by miles on 23/11/2017.
@@ -15,11 +13,9 @@ import java.util.Locale
 
 object Utils {
 
-    @JvmStatic
     val timestamp: String
         get() = SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault()).format(Date())
 
-    @JvmStatic
     fun sanitizePhoneNumber(phone: String): String {
         if (phone == "") {
             return ""
@@ -32,7 +28,6 @@ object Utils {
         } else phone
     }
 
-    @JvmStatic
     fun getPassword(businessShortCode: String, passkey: String, timestamp: String): String {
         val str = businessShortCode + passkey + timestamp
         //encode the password to Base64

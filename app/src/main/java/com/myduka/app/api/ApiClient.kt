@@ -3,18 +3,15 @@ package com.myduka.app.api
 import com.myduka.app.api.interceptor.AccessTokenInterceptor
 import com.myduka.app.api.interceptor.AuthInterceptor
 import com.myduka.app.api.services.STKPushService
-
-import java.util.concurrent.TimeUnit
-
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-
 import com.myduka.app.util.AppConstants.BASE_URL
 import com.myduka.app.util.AppConstants.CONNECT_TIMEOUT
 import com.myduka.app.util.AppConstants.READ_TIMEOUT
 import com.myduka.app.util.AppConstants.WRITE_TIMEOUT
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 /**
  * API Client helper class used to configure Retrofit object.
@@ -36,30 +33,29 @@ class ApiClient {
      *
      * When building, sets the endpoint and a [HttpLoggingInterceptor] which adds the API key as query param.
      */
-    private val restAdapter: Retrofit
-        get() {
-            val builder = Retrofit.Builder()
-            builder.baseUrl(BASE_URL)
-            builder.addConverterFactory(GsonConverterFactory.create())
+    private fun getRestAdapter(): Retrofit {
+        val builder = Retrofit.Builder()
+        builder.baseUrl(BASE_URL)
+        builder.addConverterFactory(GsonConverterFactory.create())
 
-            if (isDebug) {
-                httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-            }
-
-            val okhttpBuilder = okHttpClient()
-
-            if (isGetAccessToken) {
-                okhttpBuilder.addInterceptor(AccessTokenInterceptor())
-            }
-
-            if (mAuthToken != null && !mAuthToken!!.isEmpty()) {
-                okhttpBuilder.addInterceptor(AuthInterceptor(mAuthToken!!))
-            }
-
-            builder.client(okhttpBuilder.build())
-
-            return builder.build()
+        if (isDebug) {
+            httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
         }
+
+        val okhttpBuilder = okHttpClient()
+
+        if (isGetAccessToken) {
+            okhttpBuilder.addInterceptor(AccessTokenInterceptor())
+        }
+
+        if (mAuthToken != null && !mAuthToken!!.isEmpty()) {
+            okhttpBuilder.addInterceptor(AuthInterceptor(mAuthToken!!))
+        }
+
+        builder.client(okhttpBuilder.build())
+
+        return builder.build()
+    }
 
     /**
      * Set the [Retrofit] log level. This allows one to view network traffic.
@@ -100,10 +96,10 @@ class ApiClient {
      * @return OkHttpClient
      */
     private fun okHttpClient(): OkHttpClient.Builder = OkHttpClient.Builder()
-            .connectTimeout(CONNECT_TIMEOUT.toLong(), TimeUnit.SECONDS)
-            .writeTimeout(WRITE_TIMEOUT.toLong(), TimeUnit.SECONDS)
-            .readTimeout(READ_TIMEOUT.toLong(), TimeUnit.SECONDS)
-            .addInterceptor(httpLoggingInterceptor)
+        .connectTimeout(CONNECT_TIMEOUT.toLong(), TimeUnit.SECONDS)
+        .writeTimeout(WRITE_TIMEOUT.toLong(), TimeUnit.SECONDS)
+        .readTimeout(READ_TIMEOUT.toLong(), TimeUnit.SECONDS)
+        .addInterceptor(httpLoggingInterceptor)
 
 
     /**
@@ -111,6 +107,6 @@ class ApiClient {
      *
      * @return STKPushService Service.
      */
-    fun mpesaService(): STKPushService = restAdapter.create(STKPushService::class.java)
+    fun mpesaService(): STKPushService = getRestAdapter().create(STKPushService::class.java)
 
 }

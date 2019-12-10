@@ -15,24 +15,26 @@
  *  * limitations under the License.
  *
  */
-
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
+    buildToolsVersion = "28.0.3"
 
     defaultConfig {
         applicationId "com.myduka.app"
         minSdkVersion 16
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-        multiDexEnabled true
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+        multiDexEnabled = true
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -45,69 +47,53 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
     dataBinding {
         enabled = true
     }
 
     buildTypes.each {
-
         // CONSUMER_KEY & CONSUMER_SECRET Build Variables are referenced from gradle.properties file
         it.buildConfigField 'String', 'CONSUMER_KEY', DARAJA_CONSUMER_KEY
         it.buildConfigField 'String', 'CONSUMER_SECRET', DARAJA_CONSUMER_SECRET
     }
-
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.60"
 
-    implementation deps.kotlin
-    implementation deps.support.appcompat
-    implementation deps.support.design
-    implementation deps.support.support
-    implementation deps.support.multidex
-    implementation deps.support.cardview
-    implementation deps.support.recyclerview
-    implementation deps.support.constraintLayout
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.2"
 
-    //Data Binding
-    kapt deps.dataBinding
+    implementation "androidx.appcompat:appcompat:1.1.0"
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
+    implementation "com.google.android.material:material:1.2.0-alpha02"
+    implementation "androidx.constraintlayout:constraintlayout:1.1.3"
 
-    //Butterknife - Bind Views
-    implementation deps.butterknife.core
-    annotationProcessor deps.butterknife.compiler
-    //Log - Replace the Android Log Class
-    implementation deps.timber
-    //Firebase
-    implementation deps.firebase
-    //My Lib -> Monitor Internet Connectivity
-    implementation deps.networkmanager
-    //Glide - Handle Images
-    implementation deps.glide.core
-    annotationProcessor deps.glide.compiler
-    //Sweet Alert Replacement
-    implementation deps.sweetalert
-    //Retrofit - Network Client
-    implementation deps.retrofit.core
-    implementation deps.retrofit.gsonConverter
-    //OKHTTP3
-    implementation deps.okhttp3.core
-    implementation deps.okhttp3.interceptor
-    //GSON
-    implementation deps.gson
-    //OKIO
-    implementation deps.okio
+    implementation 'androidx.multidex:multidex:2.0.1'
 
-    //Testing !!!
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-        exclude group: 'com.android.support', module: 'support-v4'
-        exclude group: 'com.android.support', module: 'design'
-        exclude group: 'com.android.support', module: 'recyclerview-v7'
-    }
+    implementation "com.squareup.retrofit2:retrofit:2.6.2"
+    implementation "com.squareup.retrofit2:converter-gson:2.6.2"
+    implementation "com.squareup.okhttp3:okhttp:4.2.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.2.0"
 
+    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0-rc03"
+    implementation "androidx.lifecycle:lifecycle-common-java8:2.2.0-rc03"
+
+    implementation "com.google.firebase:firebase-messaging:20.1.0"
+
+    implementation "com.jakewharton.timber:timber:4.7.1"
+
+    implementation "com.github.bumptech.glide:glide:4.10.0"
+    kapt "com.github.bumptech.glide:compiler:4.10.0"
+
+    implementation "com.github.thomper:sweet-alert-dialog:v1.4.0"
+
+    testImplementation "junit:junit:4.12"
 }
+
 apply plugin: 'com.google.gms.google-services'

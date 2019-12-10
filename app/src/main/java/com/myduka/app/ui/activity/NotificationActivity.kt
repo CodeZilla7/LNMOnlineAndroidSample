@@ -23,24 +23,21 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.support.v4.content.LocalBroadcastManager
-import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
-import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
-
+import androidx.appcompat.app.AppCompatActivity
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.firebase.messaging.FirebaseMessaging
 import com.myduka.app.R
-import com.myduka.app.util.NotificationUtils
-import com.myduka.app.util.SharedPrefsUtil
-
 import com.myduka.app.util.AppConstants.PUSH_NOTIFICATION
 import com.myduka.app.util.AppConstants.REGISTRATION_COMPLETE
 import com.myduka.app.util.AppConstants.TOPIC_GLOBAL
+import com.myduka.app.util.NotificationUtils
+import com.myduka.app.util.SharedPrefsUtil
 import kotlinx.android.synthetic.main.activity_notification.*
 
 class NotificationActivity : AppCompatActivity() {
+
     private lateinit var mRegistrationBroadcastReceiver: BroadcastReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,7 +58,11 @@ class NotificationActivity : AppCompatActivity() {
                 } else if (intent.action == PUSH_NOTIFICATION) {
                     // new push notification is received
                     val message = intent.getStringExtra("message")
-                    Toast.makeText(applicationContext, "Push notification: $message", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        applicationContext,
+                        "Push notification: $message",
+                        Toast.LENGTH_LONG
+                    ).show()
                     txt_push_message.text = message
                 }
             }
@@ -85,13 +86,17 @@ class NotificationActivity : AppCompatActivity() {
         super.onResume()
 
         // register GCM registration complete receiver.
-        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-                IntentFilter(REGISTRATION_COMPLETE))
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+            mRegistrationBroadcastReceiver,
+            IntentFilter(REGISTRATION_COMPLETE)
+        )
 
         // register new push message receiver.
         // by doing this, the activity will be notified each time a new message arrives
-        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-                IntentFilter(PUSH_NOTIFICATION))
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+            mRegistrationBroadcastReceiver,
+            IntentFilter(PUSH_NOTIFICATION)
+        )
 
         // clear the notification area when the app is opened.
         NotificationUtils.clearNotifications(applicationContext)

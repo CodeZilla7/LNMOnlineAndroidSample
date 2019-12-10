@@ -18,29 +18,19 @@
 
 package com.myduka.app
 
-import android.content.Context
-import android.support.multidex.MultiDex
-import android.support.multidex.MultiDexApplication
-import com.myduka.app.util.SharedPrefsUtil
-
+import androidx.multidex.MultiDex
+import androidx.multidex.MultiDexApplication
 import timber.log.Timber
-
-/**
- * Created  on 8/2/2017.
- *
- * Converted to Kotlin by Eton Otieno
- */
 
 class MyDuka : MultiDexApplication() {
 
-    override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(base)
+    override fun onCreate() {
+        super.onCreate()
         MultiDex.install(this)
 
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
     }
-
 
 }

@@ -20,18 +20,17 @@ package com.myduka.app.service
 
 import android.content.Context
 import android.content.Intent
-import android.support.v4.content.LocalBroadcastManager
 import android.text.TextUtils
-
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.myduka.app.ui.activity.MainActivity
+import com.myduka.app.util.AppConstants
+import com.myduka.app.util.AppConstants.PUSH_NOTIFICATION
 import com.myduka.app.util.NotificationUtils
-
 import org.json.JSONException
 import org.json.JSONObject
-
-import com.myduka.app.util.AppConstants.PUSH_NOTIFICATION
 
 /**
  * Created  on 6/30/2017.
@@ -41,11 +40,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     private lateinit var notificationUtils: NotificationUtils
 
-    override fun onMessageReceived(remoteMessage: RemoteMessage?) {
+    override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        super.onMessageReceived(remoteMessage)
         //Log.e(TAG, "From: " + remoteMessage.getFrom());
-
-        if (remoteMessage == null)
-            return
 
         // Check if message contains a notification payload.
         handleNotification(remoteMessage.notification?.body)
@@ -55,12 +52,47 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             //Log.e(TAG, "Data Payload: " + remoteMessage.getData().toString());
 
             try {
-                val json = JSONObject(remoteMessage.data?.toString())
+                val json = JSONObject(remoteMessage.data.toString())
                 handleDataMessage(json)
             } catch (e: Exception) {
                 //Log.e(TAG, "Exception: " + e.getMessage());
             }
 
+        }
+    }
+
+    override fun onNewToken(token: String) {
+        super.onNewToken(token)
+        FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
+            // Saving reg id to shared preferences
+            storeRegIdInPref(it.token)
+
+            // sending reg id to your server
+            sendRegistrationToServer(it.token)
+
+            // Notify UI that registration has completed, so the progress indicator can be hidden.
+            val registrationComplete = Intent(AppConstants.REGISTRATION_COMPLETE).apply {
+                putExtra("token", it.token)
+            }
+
+            LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete)
+        }
+    }
+
+    private fun sendRegistrationToServer(token: String) {
+        // sending gcm token to server
+        //Log.e(TAG, "sendRegistrationToServer: " + token);
+    }
+
+    /**
+     * Setting values in Preference:
+     */
+
+    private fun storeRegIdInPref(token: String?) {
+        val pref = applicationContext.getSharedPreferences(AppConstants.SHARED_PREF, 0)
+        pref.edit().apply {
+            putString("regId", token)
+            apply()
         }
     }
 
@@ -74,9 +106,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
             // play notification sound
             NotificationUtils(applicationContext).playNotificationSound()
-        } else {
-            // If the app is in background, firebase itself handles the notification
         }
+        // If the app is in background, firebase itself handles the notification
     }
 
     private fun handleDataMessage(json: JSONObject) {
@@ -117,10 +148,23 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
                 // check for image attachment
                 if (TextUtils.isEmpty(imageUrl)) {
-                    showNotificationMessage(applicationContext, title, message, timestamp, resultIntent)
+                    showNotificationMessage(
+                        applicationContext,
+                        title,
+                        message,
+                        timestamp,
+                        resultIntent
+                    )
                 } else {
                     // image is present, show notification with image
-                    showNotificationMessageWithBigImage(applicationContext, title, message, timestamp, resultIntent, imageUrl)
+                    showNotificationMessageWithBigImage(
+                        applicationContext,
+                        title,
+                        message,
+                        timestamp,
+                        resultIntent,
+                        imageUrl
+                    )
                 }
             }
         } catch (e: JSONException) {
@@ -134,7 +178,13 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     /**
      * Showing notification with text only
      */
-    private fun showNotificationMessage(context: Context, title: String, message: String, timeStamp: String, intent: Intent) {
+    private fun showNotificationMessage(
+        context: Context,
+        title: String,
+        message: String,
+        timeStamp: String,
+        intent: Intent
+    ) {
         notificationUtils = NotificationUtils(context)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         notificationUtils.showNotificationMessage(title, message, timeStamp, intent)
@@ -143,7 +193,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     /**
      * Showing notification with text and image
      */
-    private fun showNotificationMessageWithBigImage(context: Context, title: String, message: String, timeStamp: String, intent: Intent, imageUrl: String) {
+    private fun showNotificationMessageWithBigImage(
+        context: Context,
+        title: String,
+        message: String,
+        timeStamp: String,
+        intent: Intent,
+        imageUrl: String
+    ) {
         notificationUtils = NotificationUtils(context)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         notificationUtils.showNotificationMessage(title, message, timeStamp, intent, imageUrl)

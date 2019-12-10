@@ -22,10 +22,6 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 
-/**
- * Created  on 7/4/2017.
- */
-
 class SharedPrefsUtil(context: Context) {
     private val pref: SharedPreferences
     private val editor: SharedPreferences.Editor

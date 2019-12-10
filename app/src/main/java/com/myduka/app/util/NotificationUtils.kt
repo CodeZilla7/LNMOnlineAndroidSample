@@ -32,10 +32,10 @@ import android.media.RingtoneManager
 import android.net.ParseException
 import android.net.Uri
 import android.os.Build
-import android.support.v4.app.NotificationCompat
 import android.text.Html
 import android.text.TextUtils
 import android.util.Patterns
+import androidx.core.app.NotificationCompat
 import com.myduka.app.R
 import com.myduka.app.util.AppConstants.NOTIFICATION_ID
 import com.myduka.app.util.AppConstants.NOTIFICATION_ID_BIG_IMAGE
@@ -50,8 +50,13 @@ import java.text.SimpleDateFormat
 
 class NotificationUtils(private val mContext: Context) {
 
-    @JvmOverloads
-    fun showNotificationMessage(title: String, message: String, timeStamp: String, intent: Intent, imageUrl: String? = null) {
+    fun showNotificationMessage(
+        title: String,
+        message: String,
+        timeStamp: String,
+        intent: Intent,
+        imageUrl: String? = null
+    ) {
         // Check for empty push message
         if (TextUtils.isEmpty(message))
             return
@@ -61,16 +66,18 @@ class NotificationUtils(private val mContext: Context) {
 
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         val resultPendingIntent = PendingIntent.getActivity(
-                mContext,
-                0,
-                intent,
-                PendingIntent.FLAG_CANCEL_CURRENT
+            mContext,
+            0,
+            intent,
+            PendingIntent.FLAG_CANCEL_CURRENT
         )
 
         val mBuilder = NotificationCompat.Builder(mContext)
 
-        val alarmSound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
-                + "://" + mContext.packageName + "/raw/notification")
+        val alarmSound = Uri.parse(
+            ContentResolver.SCHEME_ANDROID_RESOURCE
+                    + "://" + mContext.packageName + "/raw/notification"
+        )
 
         if (!TextUtils.isEmpty(imageUrl)) {
 
@@ -79,57 +86,101 @@ class NotificationUtils(private val mContext: Context) {
                 val bitmap = getBitmapFromURL(imageUrl)
 
                 if (bitmap != null) {
-                    showBigNotification(bitmap, mBuilder, icon, title, message, timeStamp, resultPendingIntent, alarmSound)
+                    showBigNotification(
+                        bitmap,
+                        mBuilder,
+                        icon,
+                        title,
+                        message,
+                        timeStamp,
+                        resultPendingIntent,
+                        alarmSound
+                    )
                 } else {
-                    showSmallNotification(mBuilder, icon, title, message, timeStamp, resultPendingIntent, alarmSound)
+                    showSmallNotification(
+                        mBuilder,
+                        icon,
+                        title,
+                        message,
+                        timeStamp,
+                        resultPendingIntent,
+                        alarmSound
+                    )
                 }
             }
         } else {
-            showSmallNotification(mBuilder, icon, title, message, timeStamp, resultPendingIntent, alarmSound)
+            showSmallNotification(
+                mBuilder,
+                icon,
+                title,
+                message,
+                timeStamp,
+                resultPendingIntent,
+                alarmSound
+            )
             playNotificationSound()
         }
     }
 
-    private fun showSmallNotification(mBuilder: NotificationCompat.Builder, icon: Int, title: String, message: String, timeStamp: String, resultPendingIntent: PendingIntent, alarmSound: Uri) {
+    private fun showSmallNotification(
+        mBuilder: NotificationCompat.Builder,
+        icon: Int,
+        title: String,
+        message: String,
+        timeStamp: String,
+        resultPendingIntent: PendingIntent,
+        alarmSound: Uri
+    ) {
 
         val inboxStyle = NotificationCompat.InboxStyle()
 
         inboxStyle.addLine(message)
 
         val notification: Notification = mBuilder.setSmallIcon(icon).setTicker(title).setWhen(0)
-                .setAutoCancel(true)
-                .setContentTitle(title)
-                .setContentIntent(resultPendingIntent)
-                .setSound(alarmSound)
-                .setStyle(inboxStyle)
-                .setWhen(getTimeMilliSec(timeStamp))
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setLargeIcon(BitmapFactory.decodeResource(mContext.resources, icon))
-                .setContentText(message)
-                .build()
+            .setAutoCancel(true)
+            .setContentTitle(title)
+            .setContentIntent(resultPendingIntent)
+            .setSound(alarmSound)
+            .setStyle(inboxStyle)
+            .setWhen(getTimeMilliSec(timeStamp))
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setLargeIcon(BitmapFactory.decodeResource(mContext.resources, icon))
+            .setContentText(message)
+            .build()
 
-        val notificationManager = mContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            mContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(NOTIFICATION_ID, notification)
     }
 
-    private fun showBigNotification(bitmap: Bitmap, mBuilder: NotificationCompat.Builder, icon: Int, title: String, message: String, timeStamp: String, resultPendingIntent: PendingIntent, alarmSound: Uri) {
+    private fun showBigNotification(
+        bitmap: Bitmap,
+        mBuilder: NotificationCompat.Builder,
+        icon: Int,
+        title: String,
+        message: String,
+        timeStamp: String,
+        resultPendingIntent: PendingIntent,
+        alarmSound: Uri
+    ) {
         val bigPictureStyle = NotificationCompat.BigPictureStyle()
         bigPictureStyle.setBigContentTitle(title)
         bigPictureStyle.setSummaryText(Html.fromHtml(message).toString())
         bigPictureStyle.bigPicture(bitmap)
         val notification: Notification = mBuilder.setSmallIcon(icon).setTicker(title).setWhen(0)
-                .setAutoCancel(true)
-                .setContentTitle(title)
-                .setContentIntent(resultPendingIntent)
-                .setSound(alarmSound)
-                .setStyle(bigPictureStyle)
-                .setWhen(getTimeMilliSec(timeStamp))
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setLargeIcon(BitmapFactory.decodeResource(mContext.resources, icon))
-                .setContentText(message)
-                .build()
+            .setAutoCancel(true)
+            .setContentTitle(title)
+            .setContentIntent(resultPendingIntent)
+            .setSound(alarmSound)
+            .setStyle(bigPictureStyle)
+            .setWhen(getTimeMilliSec(timeStamp))
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setLargeIcon(BitmapFactory.decodeResource(mContext.resources, icon))
+            .setContentText(message)
+            .build()
 
-        val notificationManager = mContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            mContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(NOTIFICATION_ID_BIG_IMAGE, notification)
     }
 
@@ -152,8 +203,10 @@ class NotificationUtils(private val mContext: Context) {
 
     // Playing notification sound
     fun playNotificationSound() = try {
-        val alarmSound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
-                + "://" + mContext.packageName + "/raw/notification")
+        val alarmSound = Uri.parse(
+            ContentResolver.SCHEME_ANDROID_RESOURCE
+                    + "://" + mContext.packageName + "/raw/notification"
+        )
         val r = RingtoneManager.getRingtone(mContext, alarmSound)
         r.play()
     } catch (e: Exception) {
@@ -163,14 +216,14 @@ class NotificationUtils(private val mContext: Context) {
 
     companion object {
 
-        @JvmStatic
         fun createNotification(context: Context, content: String) {
             val noti = Notification.Builder(context)
-                    .setContentTitle(content)
-                    .setContentText("Subject").setSmallIcon(R.mipmap.ic_launcher).build().apply {
-                        this.flags = this.flags or Notification.FLAG_AUTO_CANCEL
-                    }
-            val notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                .setContentTitle(content)
+                .setContentText("Subject").setSmallIcon(R.mipmap.ic_launcher).build().apply {
+                    this.flags = this.flags or Notification.FLAG_AUTO_CANCEL
+                }
+            val notificationManager =
+                context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             // hide the notification after its selected
 
             notificationManager.notify(1, noti)
@@ -207,9 +260,8 @@ class NotificationUtils(private val mContext: Context) {
         }
 
         // Clears notification tray messages
-        @JvmStatic
         fun clearNotifications(context: Context) =
-                (context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancelAll()
+            (context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancelAll()
 
 
         fun getTimeMilliSec(timeStamp: String): Long {

@@ -1,12 +1,5 @@
 package com.myduka.app.util
 
-/**
- * Object to hold constants needed in the app
- *
- * @author Eton Otieno
- * Converted to Kotlin by Eton Otieno
- */
-
 object AppConstants {
 
     /**
